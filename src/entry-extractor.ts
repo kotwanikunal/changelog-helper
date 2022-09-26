@@ -16,6 +16,12 @@ export interface DependabotEntry {
   newVersion: string
 }
 
+export interface BackportEntry {
+  pullRequestNumber: number
+  repo: string
+  owner: string
+}
+
 export function getDependabotEntry(event: WebhookPayload): DependabotEntry {
   const pullRequestNumber: number = event.pull_request!.number
   const titleResult = TITLE_REGEX.exec(event.pull_request!.title)
@@ -28,5 +34,17 @@ export function getDependabotEntry(event: WebhookPayload): DependabotEntry {
     package: titleResult[1],
     oldVersion: titleResult[2],
     newVersion: titleResult[3]
+  }
+}
+
+export function getBackportEntry(event: WebhookPayload): BackportEntry {
+  const pullRequestNumber: number = event.pull_request!.number
+  const repo: string = event.repository!.name
+  const owner: string = event.repository!.owner.login
+
+  return {
+    pullRequestNumber,
+    repo,
+    owner
   }
 }

@@ -1,9 +1,9 @@
 {
-  "name": "depenadbot-helper",
-  "version": "1.0.0",
+  "name": "dependabot-backport-changelog-helper",
+  "version": "1.0.1",
   "private": false,
-  "description": "A GitHub Action to auto-add dependabot changes to your changelog and increment version numbers",
-  "main": "lib/dependabot-helper.js",
+  "description": "A GitHub Action to auto-add dependabot or backported changes to your changelog and increment version numbers",
+  "main": "lib/changelog-helper.js",
   "scripts": {
     "build": "tsc --module commonjs",
     "format": "prettier --write **/*.ts",
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dangoslen/dependabot-changelog-helper.git"
+    "url": "git+https://github.com/kotwanikunal/changelog-helper.git"
   },
   "keywords": [
     "dependabot",
@@ -25,10 +25,11 @@
     "actions",
     "changelog"
   ],
-  "author": "@dangoslen",
+  "author": "@dangoslen, @kotwanikunal",
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.2.7",
+    "@actions/exec": "^1.1.1",
     "@actions/github": "^4.0.0",
     "make-coverage-badge": "^1.2.0"
   },

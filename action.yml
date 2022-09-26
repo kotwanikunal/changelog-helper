@@ -5,7 +5,7 @@ author: '@dangoslen'
 inputs:
   version:
     description: |
-      "The version to find in the CHANGELOG to add dependabot entries to"
+      "The version to find in the CHANGELOG to add dependabot/backported entries to"
     required: true
     default: "UNRELEASED"
   changelogPath:
@@ -23,6 +23,19 @@ inputs:
       "If the desired version is not found in the file, this is the default line number (1-indexed) in which to place the new version"
     required: true
     default: 3
+  backportHelper:
+    description: |
+      "Flag to indicate if the helper needs to process a backport request."
+    required: false
+    default: false
+  originalPRNumber:
+    description: |
+      "The PR number using which the change was merged into the original version."
+    required: false
+  githubToken:
+    description: Token for the GitHub API.
+    required: false
+
 runs:
   using: 'node12'
   main: 'dist/index.js'

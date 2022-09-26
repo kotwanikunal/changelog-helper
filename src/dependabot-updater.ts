@@ -13,7 +13,7 @@ interface ParsedResult {
 }
 
 const DEPENDENCY_SECTION_REGEX = new RegExp(/^### [Dependencies|DEPENDENCIES]/)
-const EMPTY_LINE_REGEX = new RegExp(/^\s*$/)
+const VERSION_REGEX = new RegExp(/^## \[(.)*\]/)
 
 export async function updateChangelog(
   entry: DependabotEntry,
@@ -38,16 +38,6 @@ export async function updateChangelog(
   } else {
     addNewEntry(entry, version, newVersionLineNumber, changelogPath, result)
   }
-}
-
-function buildEntryLine(entry: DependabotEntry): string {
-  return `${buildEntryLineStart(entry)} ${entry.oldVersion} to ${
-    entry.newVersion
-  }`
-}
-
-function buildEntryLineStart(entry: DependabotEntry): string {
-  return `- Bumps \`${entry.package}\` from`
 }
 
 function addNewEntry(
@@ -94,7 +84,7 @@ function writeEntry(
     contents[i] = contents[i - 1]
   }
   contents[lineNumber] = changelogEntry
-  fs.writeFileSync(changelogPath, contents.join(EOL))
+  fs.writeFileSync(changelogPath, contents.join(EOL).concat(EOL))
 }
 
 function overwriteEntry(
@@ -162,9 +152,10 @@ async function parseChangelogForEntry(
       changelogLineNumber = lineNumber + 1
     }
 
-    foundLastEntry = versionFound && EMPTY_LINE_REGEX.test(line)
+    foundLastEntry =
+      versionFound && dependencySectionFound && VERSION_REGEX.test(line)
     if (foundLastEntry) {
-      changelogLineNumber = lineNumber
+      changelogLineNumber = lineNumber - 1
     }
     lineNumber++
   }
@@ -186,6 +177,16 @@ async function parseChangelogForEntry(
     dependencySectionFound,
     contents
   }
+}
+
+function buildEntryLine(entry: DependabotEntry): string {
+  return `${buildEntryLineStart(entry)} ${entry.oldVersion} to ${
+    entry.newVersion
+  }`
+}
+
+function buildEntryLineStart(entry: DependabotEntry): string {
+  return `- Bumps \`${entry.package}\` from`
 }
 
 function lastLineCheck(
