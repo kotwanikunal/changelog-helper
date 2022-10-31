@@ -297,3 +297,5 @@ export async function backportChangelog(
     changelogParsedResult
   )
 }
+
+exports.backportChangelog = backportChangelog
