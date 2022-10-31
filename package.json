@@ -1,6 +1,6 @@
 {
   "name": "dependabot-backport-changelog-helper",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "private": false,
   "description": "A GitHub Action to auto-add dependabot or backported changes to your changelog and increment version numbers",
   "main": "lib/changelog-helper.js",

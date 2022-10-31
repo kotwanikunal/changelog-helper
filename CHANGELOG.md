@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.0]
+### Changed
+- Bump version
+
 ## [1.0.5]
 ### Changed
 - Added backport support
