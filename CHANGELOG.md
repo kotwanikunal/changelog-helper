@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.5]
+### Changed
+- Added backport support
+
 ## [1.0.0]
 
 ### First official release of the Dependabot Changelog Helper! 🚀
@@ -34,7 +38,7 @@
 - Simplifies pull request workflow for checking the changelog
 
 ## [0.1.0]
-### Added 
+### Added
 - Adds initial logic for updating a changelog based on the [KeepAChangelog](https://keepachangelog.com/en/1.0.0/) format
 ### Dependencies
 - Bumps `eslint` from 7.17.0 to 7.21.0

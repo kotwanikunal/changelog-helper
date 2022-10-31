@@ -34,10 +34,13 @@ async function run(): Promise<void> {
       const originalPRNumber: number = Number.parseInt(
         core.getInput('originalPRNumber')
       )
+      const backportPRNumber: number = Number.parseInt(
+        core.getInput('backportPRNumber')
+      )
       const entry: BackportEntry = getBackportEntry(github.context.payload)
       backportChangelog(
         version,
-        entry.pullRequestNumber,
+        backportPRNumber,
         originalPRNumber,
         githubToken,
         entry.owner,

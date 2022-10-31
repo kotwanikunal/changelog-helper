@@ -297,3 +297,16 @@ export async function backportChangelog(
     changelogParsedResult
   )
 }
+
+exports.backportChangelog = backportChangelog
+
+backportChangelog(
+  '2.0.0',
+  1000,
+  4582,
+  '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',
+  'opensearch-project',
+  'OpenSearch',
+  2,
+  'CHANGELOG.md'
+)
