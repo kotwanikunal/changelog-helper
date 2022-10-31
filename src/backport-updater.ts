@@ -13,6 +13,8 @@ const CHANGELOG_ENTRY_PR_NUMBER_REGEX = new RegExp(
   /(^-)(.*)(\[#)(\d{4,6})(.*)(\d{4,6})(.*)/
 )
 
+const CWD = 'new'
+
 interface ParsedResult {
   changelogLineNumber: number
   versionFound: boolean
@@ -52,7 +54,6 @@ async function extractGitDiffLocation(
   let changelogDiffFound = false
   let lineNumberDiffStatementFound = false
 
-  // The module used to insert a line back to the CHANGELOG is 1-based offset instead of 0-based
   for await (const line of fileStream) {
     if (DIFF_CHANGELOG_REGEX.test(line)) {
       changelogDiffFound = true
@@ -113,10 +114,14 @@ async function fetchOriginalPullRequest(
   repo: string,
   pullRequestNumber: number
 ): Promise<void> {
-  await exec('git', [
-    'clone',
-    `https://x-access-token:${token}@github.com/${owner}/${repo}.git`
-  ])
+  await exec(
+    'git',
+    [
+      'clone',
+      `https://x-access-token:${token}@github.com/${owner}/${repo}.git`
+    ],
+    {cwd: CWD}
+  )
 
   await exec(
     'git',
@@ -125,9 +130,11 @@ async function fetchOriginalPullRequest(
       'origin',
       `pull/${pullRequestNumber}/head:PR#${pullRequestNumber}`
     ],
-    {cwd: repo}
+    {cwd: `${CWD}/${repo}`}
   )
-  await exec('git', ['checkout', `PR#${pullRequestNumber}`], {cwd: repo})
+  await exec('git', ['checkout', `PR#${pullRequestNumber}`], {
+    cwd: `${CWD}/${repo}`
+  })
 }
 
 async function parseChangelogForEntry(
@@ -240,6 +247,12 @@ function updateChangelogEntry(entry: string, backportPRNumber: number): string {
   return entry
 }
 
+async function pushChanges(changelogPath: string, repo: string): Promise<void> {
+  await exec('git', ['add', `${changelogPath}`], {cwd: repo})
+  await exec('git', ['commit', '-m', 'Update changelog', '-s'], {cwd: repo})
+  await exec('git', ['push'], {cwd: repo})
+}
+
 export async function backportChangelog(
   backportVersion: string,
   backportPullRequestNumber: number,
@@ -250,8 +263,11 @@ export async function backportChangelog(
   newVersionLineNumber: number,
   changelogPath: string
 ): Promise<void> {
-  const originalChangelogLocation = `./${repo}/${changelogPath}`
+  const originalChangelogLocation = `./${CWD}/${repo}/${changelogPath}`
+  const backportChangelogLocation = `./${repo}/${changelogPath}`
   const versionRegex: RegExp = buildVersionRegex(backportVersion)
+
+  await exec('mkdir', [CWD])
 
   const diffFilePath = `PR#${originalPullRequestNumber}.diff`
 
@@ -264,7 +280,7 @@ export async function backportChangelog(
   )
 
   const originalChangeLineNumber = await extractGitDiffLocation(diffFilePath)
-
+  process.stdout.write(`Change: ${JSON.stringify(originalChangeLineNumber)}\n`)
   await fetchOriginalPullRequest(
     githubToken,
     owner,
@@ -277,10 +293,12 @@ export async function backportChangelog(
     originalChangeLineNumber
   )
 
+  process.stdout.write(`Change: ${JSON.stringify(originalChangelogEntry)} \n`)
+
   const changelogParsedResult: ParsedResult = await parseChangelogForEntry(
     versionRegex,
     originalChangelogEntry.sectionName,
-    changelogPath
+    backportChangelogLocation
   )
 
   const updatedEntry = updateChangelogEntry(
@@ -293,9 +311,11 @@ export async function backportChangelog(
     originalChangelogEntry.sectionName,
     backportVersion,
     newVersionLineNumber,
-    changelogPath,
+    backportChangelogLocation,
     changelogParsedResult
   )
+
+  pushChanges(changelogPath, repo)
 }
 
 exports.backportChangelog = backportChangelog

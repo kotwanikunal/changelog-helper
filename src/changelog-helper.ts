@@ -55,9 +55,10 @@ async function run(): Promise<void> {
 }
 
 function pullRequestMatchesLabel(labelPattern: string): boolean {
+  let labelPatternRegEx: RegExp = new RegExp(labelPattern)
   let matches = false
-  getPullRequestLabels().array.forEach(label => {
-    matches = matches || labelPattern.test(label)
+  getPullRequestLabels().forEach(label => {
+    matches = matches || labelPatternRegEx.test(label)
   })
   return matches
 }
