@@ -32,6 +32,10 @@ inputs:
     description: |
       "The PR number using which the change was merged into the original version."
     required: false
+    backportPRNumber:
+      description: |
+        "The PR number using which the change was merged into the original version."
+      required: false
   githubToken:
     description: Token for the GitHub API.
     required: false

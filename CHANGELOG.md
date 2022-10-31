@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.1]
+### Changed
+- Action details
+
 ## [1.1.0]
 ### Changed
 - Bump version
